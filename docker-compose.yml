@@ -1,0 +1,30 @@
+version: '3.7'
+
+services:
+  mariadb:
+    image: mariadb:${MARIADB_VERSION}
+    container_name: mariadb-${ID}
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MARIADB_ROOT_PW}
+      - MYSQL_DATABASE=${MARIADB_SCHEMA}
+      - MYSQL_USER=${MARIADB_USER}
+      - MYSQL_PASSWORD=${MARIADB_PW}
+    volumes:
+      - ${MARIADB_VOLUME}:/var/lib/mysql
+    ports:
+      - '${MARIADB_EXT_PORT}:3306'
+    networks:
+      - devh-network
+  auth-service:
+    image: mania290/auth-service:v1
+    container_name: auth-service
+    environment:
+      - DB_NETWORK=mariadb-${ID}
+    ports:
+      - '8001:8001'
+    networks:
+      - devh-network
+      
+networks:
+  devh-network:
+    external: true
